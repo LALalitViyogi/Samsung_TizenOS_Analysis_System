@@ -43,8 +43,10 @@ def vol21_artifacts(image_path,part_value):
     
     #etc file part
     etc_inode=search_value(output,'etc')
+
     #usr_app file part
     usr_inode = search_value(output,'usr')
+    
     #print(etc_inode)
     #print(usr_inode)
 
@@ -71,6 +73,36 @@ def vol21_artifacts(image_path,part_value):
     print("-------- WIFI INFO --------")
     show_data(image_path,part_value,wifi_inode,'network_info')
 
+    #working user apps
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {usr_inode}'),stdout=subprocess.PIPE)
+    usr_inode = search_value(output,'apps')
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {usr_inode}'),stdout=subprocess.PIPE)
+
+    #recipe image
+    #img_inode = search_value(output,'1K3CsGDv16')
+
+    #payment details
+    #pay_inode = search_value(output,'8s4wz2jex0')
+
+    #Manufacturer location and calender data
+    manu_calender_inode = search_value(output,'9zWvGSYU8Z')
+
+    #geo location
+    #geo_inode = search_value(output,'com.glympse.tizen.frapp')
+
+    #voice messages
+    #voice_inode = search_value(output,'com.glympse.tizen.frapp.service')
+
+    #card and transaction error details
+    card_trans_errror_inode = search_value(output,'com.mastercard.tizen')
+
+    #connected device and alarm info
+    device_alarm_inode = search_value(output,'kzOK54sYx0')
+
+    #shopping and remainder details
+    shop_remainder_inode = search_value(output,'LAykghKXQw')
+
+    
 
 
 
