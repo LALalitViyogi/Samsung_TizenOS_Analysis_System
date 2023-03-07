@@ -26,10 +26,20 @@ def get_part_inode(image_path,partition):
 
 def show_data(image_path,part_value,inode,file_name=None):
     output = subprocess.run(shlex.split(f'sudo icat -o {part_value} {image_path} {inode}'))
-    try:
-        print(output.stdout.decode())
-    except:
-        print(output.stdout)
+    #try:
+    #    print(output.stdout.decode())
+    #except:
+    #    print(output.stdout)
+    
+    if file_name:
+        try:
+            with open(f'./analysis_files/{file_name}.txt','w') as file:
+                file.write(output.stdout.decode())
+                file.close()
+        except:
+            with open(f'./analysis_files/{file_name}.txt','wb') as file:
+                file.write(output.stdout)
+                file.close()
 
 def search_value(output,file_name):
     
@@ -55,14 +65,14 @@ def vol21_artifacts(image_path,part_value):
     #finding os_info inode
     os_inode = search_value(etc_output,'os-release')
 
-    print("------ OS INFO ---------")
-    #show_data(image_path,part_value,os_inode,'os_info')
+    #print("------ OS INFO ---------")
+    show_data(image_path,part_value,os_inode,'os_info')
 
     #finding build info
     build_inode = search_value(etc_output,'tizen-build.conf')
 
-    print("-------- BUILD INFO --------")
-    #show_data(image_path,part_value,build_inode,'build_info')
+    #print("-------- BUILD INFO --------")
+    show_data(image_path,part_value,build_inode,'build_info')
 
     #finding network info
     etc_inode = search_value(etc_output,'wifi-direct')
@@ -70,8 +80,8 @@ def vol21_artifacts(image_path,part_value):
 
     wifi_inode = search_value(etc_output,'dhcpd.conf')
     
-    print("-------- WIFI INFO --------")
-    #show_data(image_path,part_value,wifi_inode,'network_info')
+    #print("-------- WIFI INFO --------")
+    show_data(image_path,part_value,wifi_inode,'network_info')
 
     #working user apps
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {usr_inode}'),stdout=subprocess.PIPE)
@@ -113,16 +123,16 @@ def vol21_artifacts(image_path,part_value):
         manu_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {manu_calender_inode}'),stdout=subprocess.PIPE)
     
     manu_calender_inode = search_value(manu_output,'AccInfoData.txt')
-    #show_data(image_path,part_value,manu_calender_inode,'manufacture_info')
+    show_data(image_path,part_value,manu_calender_inode,'manufacture_info')
 
     manu_calender_inode = search_value(manu_output,'calendarData.txt')
-    #show_data(image_path,part_value,manu_calender_inode,'calendar_info')
+    show_data(image_path,part_value,manu_calender_inode,'calendar_info')
 
     #working card details
     card_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {card_trans_errror_inode}'),stdout=subprocess.PIPE)
 
     card_trans_errror_inode = search_value(card_output,'tizen-manifest.xml')
-    #show_data(image_path,part_value,card_trans_errror_inode,'card_info')
+    show_data(image_path,part_value,card_trans_errror_inode,'card_info')
 
     card_list = ['shared','res']
     for i in range(len(card_list)):
@@ -130,7 +140,7 @@ def vol21_artifacts(image_path,part_value):
         card_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {card_trans_errror_inode}'),stdout=subprocess.PIPE)
     
     card_trans_errror_inode = search_value(card_output,'error.html')
-    #show_data(image_path,part_value,card_trans_errror_inode,'trans_error_info')
+    show_data(image_path,part_value,card_trans_errror_inode,'trans_error_info')
 
     #connected device and alarm info
     device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
@@ -142,7 +152,7 @@ def vol21_artifacts(image_path,part_value):
     
     #all connected devices
     device_alarm_inode = search_value(device_output,'devices')
-    #show_data(image_path,part_value,device_alarm_inode,'connected_Devices_info')
+    show_data(image_path,part_value,device_alarm_inode,'connected_Devices_info')
 
     device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
     device_path_list =['AIR_PURIFIER','javascript']
@@ -152,7 +162,7 @@ def vol21_artifacts(image_path,part_value):
         device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
     
     device_alarm_inode = search_value(device_output,'app.js')
-    #show_data(image_path,part_value,device_alarm_inode,'Alarm_info')
+    show_data(image_path,part_value,device_alarm_inode,'Alarm_info')
 
 
     #shopping details and remaainder info
@@ -164,10 +174,10 @@ def vol21_artifacts(image_path,part_value):
         shop_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {shop_remainder_inode}'),stdout=subprocess.PIPE)
     
     shop_remainder_inode = search_value(shop_output,'dummyEmart.json')
-    #show_data(image_path,part_value,shop_remainder_inode,'shopping_info')
+    show_data(image_path,part_value,shop_remainder_inode,'shopping_info')
 
     shop_remainder_inode = search_value(shop_output,'dummyListJson.json')
-    #show_data(image_path,part_value,shop_remainder_inode,'shop_remainder_info')
+    show_data(image_path,part_value,shop_remainder_inode,'shop_remainder_info')
      
 
     
