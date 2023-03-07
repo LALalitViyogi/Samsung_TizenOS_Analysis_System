@@ -193,14 +193,14 @@ def vol23_artifacts(image_path,part_value):
     #work for finding MAC Address of system
     mac_output= subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {mac_inode}'),stdout=subprocess.PIPE)
     mac_inode = search_value(mac_output,'.mac.info')
-    #show_data(image_path,part_value,mac_inode,'MAC_address_info')
+    show_data(image_path,part_value,mac_inode,'MAC_address_info')
 
     mail_list = ['5001','.account.db']
     for i in range(len(mail_list)):
         mail_output= subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {mail_inode}'),stdout=subprocess.PIPE)
         mail_inode = search_value(mail_output,f'{mail_list[i]}')
     
-    #show_data(image_path,part_value,mail_inode,'email_info')
+    show_data(image_path,part_value,mail_inode,'email_info')
 
     other_list = ['var','lib']
     for i in range(len(other_list)):
@@ -216,7 +216,7 @@ def vol23_artifacts(image_path,part_value):
     #system configuration info 
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {sys_inode}'),stdout=subprocess.PIPE)
     sys_inode = search_value(output,'dnsmasq.leases')
-    #show_data(image_path,part_value,sys_inode,'sys_configure_info')
+    show_data(image_path,part_value,sys_inode,'sys_configure_info')
 
     #bluetooth information
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {blue_inode}'),stdout=subprocess.PIPE)
@@ -226,14 +226,29 @@ def vol23_artifacts(image_path,part_value):
         reg=re.search('\w{2}:\w{2}:\w{2}:\w{2}:\w{2}:\w{2}',line)
         if reg is not None:
             blue_addr = reg.group()
+            break
             #print(blue_addr)
 
     blue_inode = search_value(output,blue_addr)
     #print(blue_inode)
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {blue_inode}'),stdout=subprocess.PIPE)
     blue_inode = search_value(output,'cache')
-    #show_data(image_path,part_value,blue_inode,'bluetooth_info')
+    show_data(image_path,part_value,blue_inode,'bluetooth_info')
 
+    #networking service details
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {net_inode}'),stdout=subprocess.PIPE)
+    net_addr='m'
+
+    for line in output.stdout.decode().split('\n'):
+        reg = re.search('wifi_\w+_managed_none',line)
+        if reg is not None:
+            net_addr = reg.group()
+            #print(reg.group())
+            break
+    
+    net_inode = search_value(output,net_addr)
+    show_data(image_path,part_value,net_inode,'wifi_network_info')
+        
     
 
     
