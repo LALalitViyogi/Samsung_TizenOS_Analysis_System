@@ -24,8 +24,8 @@ def get_part_inode(image_path,partition):
             return values[2]
 
 
-def show_data(image_path,part_value,inode,file_name=None):
-    output = subprocess.run(shlex.split(f'sudo icat -o {part_value} {image_path} {inode}'))
+def show_data(image_path,part_value,inode,file_name):
+    output = subprocess.run(shlex.split(f'sudo icat -o {part_value} {image_path} {inode}'),stdout=subprocess.PIPE)
     #try:
     #    print(output.stdout.decode())
     #except:
