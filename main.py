@@ -56,13 +56,13 @@ def vol21_artifacts(image_path,part_value):
     os_inode = search_value(etc_output,'os-release')
 
     print("------ OS INFO ---------")
-    show_data(image_path,part_value,os_inode,'os_info')
+    #show_data(image_path,part_value,os_inode,'os_info')
 
     #finding build info
     build_inode = search_value(etc_output,'tizen-build.conf')
 
     print("-------- BUILD INFO --------")
-    show_data(image_path,part_value,build_inode,'build_info')
+    #show_data(image_path,part_value,build_inode,'build_info')
 
     #finding network info
     etc_inode = search_value(etc_output,'wifi-direct')
@@ -71,7 +71,7 @@ def vol21_artifacts(image_path,part_value):
     wifi_inode = search_value(etc_output,'dhcpd.conf')
     
     print("-------- WIFI INFO --------")
-    show_data(image_path,part_value,wifi_inode,'network_info')
+    #show_data(image_path,part_value,wifi_inode,'network_info')
 
     #working user apps
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {usr_inode}'),stdout=subprocess.PIPE)
@@ -101,6 +101,38 @@ def vol21_artifacts(image_path,part_value):
 
     #shopping and remainder details
     shop_remainder_inode = search_value(output,'LAykghKXQw')
+
+    ##############   detailed work for each aspects ##################
+
+    #manufacturing
+    manu_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {manu_calender_inode}'),stdout=subprocess.PIPE)
+    manu_list = ['res','wgt','libs']
+
+    for i in range(len(manu_list)):
+        manu_calender_inode = search_value(manu_output,f'{manu_list[i]}')
+        manu_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {manu_calender_inode}'),stdout=subprocess.PIPE)
+    
+    manu_calender_inode = search_value(manu_output,'AccInfoData.txt')
+    #show_data(image_path,part_value,manu_calender_inode,'manufacture_info')
+
+    manu_calender_inode = search_value(manu_output,'calendarData.txt')
+    #show_data(image_path,part_value,manu_calender_inode,'calendar_info')
+
+    #working card details
+    card_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {card_trans_errror_inode}'),stdout=subprocess.PIPE)
+
+    card_trans_errror_inode = search_value(card_output,'tizen-manifest.xml')
+    #show_data(image_path,part_value,card_trans_errror_inode,'card_info')
+
+    card_list = ['shared','res']
+    for i in range(len(card_list)):
+        card_trans_errror_inode = search_value(card_output,f'{card_list[i]}')
+        card_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {card_trans_errror_inode}'),stdout=subprocess.PIPE)
+    
+    card_trans_errror_inode = search_value(card_output,'error.html')
+    #show_data(image_path,part_value,card_trans_errror_inode,'trans_error_info')
+
+
 
     
 
