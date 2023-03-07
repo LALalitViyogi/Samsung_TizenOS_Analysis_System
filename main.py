@@ -180,7 +180,65 @@ def vol21_artifacts(image_path,part_value):
     show_data(image_path,part_value,shop_remainder_inode,'shop_remainder_info')
      
 
+def vol23_artifacts(image_path,part_value):
+
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path}'),stdout=subprocess.PIPE)
+
+    #finding inode for different paths
     
+    mac_inode = search_value(output,'etc')
+    mail_inode = search_value(output,'dbspace')
+
+
+    #work for finding MAC Address of system
+    mac_output= subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {mac_inode}'),stdout=subprocess.PIPE)
+    mac_inode = search_value(mac_output,'.mac.info')
+    #show_data(image_path,part_value,mac_inode,'MAC_address_info')
+
+    mail_list = ['5001','.account.db']
+    for i in range(len(mail_list)):
+        mail_output= subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {mail_inode}'),stdout=subprocess.PIPE)
+        mail_inode = search_value(mail_output,f'{mail_list[i]}')
+    
+    #show_data(image_path,part_value,mail_inode,'email_info')
+
+    other_list = ['var','lib']
+    for i in range(len(other_list)):
+        var_inode = search_value(output,f'{other_list[i]}')
+        output= subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {var_inode}'),stdout=subprocess.PIPE)
+    
+    #var device information
+    sys_inode = search_value(output,'misc')
+    net_inode = search_value(output,'connman')
+    blue_inode = search_value(output,'bluetooth')
+    
+
+    #system configuration info 
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {sys_inode}'),stdout=subprocess.PIPE)
+    sys_inode = search_value(output,'dnsmasq.leases')
+    #show_data(image_path,part_value,sys_inode,'sys_configure_info')
+
+    #bluetooth information
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {blue_inode}'),stdout=subprocess.PIPE)
+    
+    blue_addr='m'
+    for line in output.stdout.decode().split('\n'):
+        reg=re.search('\w{2}:\w{2}:\w{2}:\w{2}:\w{2}:\w{2}',line)
+        if reg is not None:
+            blue_addr = reg.group()
+            #print(blue_addr)
+
+    blue_inode = search_value(output,blue_addr)
+    #print(blue_inode)
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {blue_inode}'),stdout=subprocess.PIPE)
+    blue_inode = search_value(output,'cache')
+    #show_data(image_path,part_value,blue_inode,'bluetooth_info')
+
+    
+
+    
+
+
 
 
 
@@ -206,7 +264,7 @@ if __name__ == "__main__":
             vol21_artifacts(image_path,part_value)
         
         elif partition == 'system-data':
-            pass
+            vol23_artifacts(image_path,part_value)
         
         elif partition == 'user':
             pass
