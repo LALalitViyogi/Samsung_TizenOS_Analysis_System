@@ -132,7 +132,43 @@ def vol21_artifacts(image_path,part_value):
     card_trans_errror_inode = search_value(card_output,'error.html')
     #show_data(image_path,part_value,card_trans_errror_inode,'trans_error_info')
 
+    #connected device and alarm info
+    device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
 
+    device_path_list = ['res','wgt','views']
+    for i in range(len(device_path_list)):
+        device_alarm_inode = search_value(device_output,f'{device_path_list[i]}')
+        device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
+    
+    #all connected devices
+    device_alarm_inode = search_value(device_output,'devices')
+    #show_data(image_path,part_value,device_alarm_inode,'connected_Devices_info')
+
+    device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
+    device_path_list =['AIR_PURIFIER','javascript']
+
+    for i in range(len(device_path_list)):
+        device_alarm_inode = search_value(device_output,f'{device_path_list[i]}')
+        device_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {device_alarm_inode}'),stdout=subprocess.PIPE)
+    
+    device_alarm_inode = search_value(device_output,'app.js')
+    #show_data(image_path,part_value,device_alarm_inode,'Alarm_info')
+
+
+    #shopping details and remaainder info
+    shop_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {shop_remainder_inode}'),stdout=subprocess.PIPE)
+    shop_list = ['res','wgt']
+
+    for i in range(len(shop_list)):
+        shop_remainder_inode = search_value(shop_output,f'{shop_list[i]}')
+        shop_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {shop_remainder_inode}'),stdout=subprocess.PIPE)
+    
+    shop_remainder_inode = search_value(shop_output,'dummyEmart.json')
+    #show_data(image_path,part_value,shop_remainder_inode,'shopping_info')
+
+    shop_remainder_inode = search_value(shop_output,'dummyListJson.json')
+    #show_data(image_path,part_value,shop_remainder_inode,'shop_remainder_info')
+     
 
     
 
