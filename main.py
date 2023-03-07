@@ -62,6 +62,15 @@ def vol21_artifacts(image_path,part_value):
     print("-------- BUILD INFO --------")
     show_data(image_path,part_value,build_inode,'build_info')
 
+    #finding network info
+    etc_inode = search_value(etc_output,'wifi-direct')
+    etc_output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {etc_inode}'),stdout=subprocess.PIPE)
+
+    wifi_inode = search_value(etc_output,'dhcpd.conf')
+    
+    print("-------- WIFI INFO --------")
+    show_data(image_path,part_value,wifi_inode,'network_info')
+
 
 
 
