@@ -182,6 +182,7 @@ def vol21_artifacts(image_path,part_value):
 
 def vol23_artifacts(image_path,part_value):
 
+    
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path}'),stdout=subprocess.PIPE)
 
     #finding inode for different paths
@@ -249,12 +250,73 @@ def vol23_artifacts(image_path,part_value):
     net_inode = search_value(output,net_addr)
     show_data(image_path,part_value,net_inode,'wifi_network_info')
         
+
+def vol24_artifacts(image_path,part_value):
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path}'),stdout=subprocess.PIPE)
     
+    #searching inode for different paths
+    dbspace_inode = search_value(output,'dbspace')
+    data_inode = search_value(output,'data')
+    home_inode = search_value(output,'home')
+
+    # working on dbspace files
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {dbspace_inode}'),stdout=subprocess.PIPE)
+    dbspace_inode = search_value(output,'.push.db')
+    #show_data(image_path,part_value,dbspace_inode,'support_app_info')
+
+    #working on browser history
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {data_inode}'),stdout=subprocess.PIPE)
+    data_list = ['browser-provider','database']
+    
+    for i in range(len(data_list)):
+        data_inode=search_value(output,f'{data_list[i]}')
+        output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {data_inode}'),stdout=subprocess.PIPE)
+    
+    data_inode = search_value(output,'.browser-provider-history.db')
+    #show_data(image_path,part_value,data_inode,'browser_history_info')
+
+    #working on general usage owner data
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {home_inode}'),stdout=subprocess.PIPE)
+    home_list=['owner','apps_rw']
+
+    for i in range(len(home_list)):
+        home_inode = search_value(output,f'{home_list[i]}')
+        output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {home_inode}'),stdout=subprocess.PIPE)
+    
+    samsung_inode = search_value(output,'com.samsung.samsung-connect')
+    fm_inode = search_value(output,'4GKFs7KtEh')
+    
+    #working on FM and location data
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {fm_inode}'),stdout=subprocess.PIPE)
+    fm_list = ['data','chromium-efl','cache','Cache']
+
+    for i in range(len(fm_list)):
+        fm_inode = search_value(output,f'{fm_list[i]}')
+        output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {fm_inode}'),stdout=subprocess.PIPE)
+    
+    fm_inode=search_value(output,'f_000002')
+    show_data(image_path,part_value,fm_inode,'fm_location_info')
+
+    #working personalized data
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {samsung_inode}'),stdout=subprocess.PIPE)
 
     
+    shared_inode = search_value(output,'shared')
+    data_inode = search_value(output,'data')
 
+    #this is for shared inode value
+    data_list = ['data','sc.db']
 
+    for i in range(len(data_list)):
+        output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {shared_inode}'),stdout=subprocess.PIPE)
+        shared_inode = search_value(output,f'{data_list[i]}')
+    
+    show_data(image_path,part_value,shared_inode,'other_device_info')
 
+    output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {data_inode}'),stdout=subprocess.PIPE)
+    data_inode = search_value(output,'.pref')
+
+    show_data(image_path,part_value,data_inode,'cloud_artifacts_info')
 
 
 
@@ -267,7 +329,15 @@ if __name__ == "__main__":
     mode=int(input("Enter Mode Number:"))
     
     if mode==1:
-        pass
+        partition_list=['rootfs.img','system-data','user']
+        function_call = [vol21_artifacts,vol23_artifacts,vol24_artifacts]
+        for i in range(len(partition_list)):
+            part_value = part_value=get_part_inode(image_path,partition_list[i])
+            function_call[i](image_path,part_value)
+        
+        print("All necessary artifacts files saved in analaysis folder")
+
+
 
     elif mode==2:
         print_table(image_path)
@@ -282,4 +352,4 @@ if __name__ == "__main__":
             vol23_artifacts(image_path,part_value)
         
         elif partition == 'user':
-            pass
+            vol24_artifacts(image_path,part_value)
