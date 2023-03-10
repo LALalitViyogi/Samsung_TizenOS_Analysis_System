@@ -262,7 +262,7 @@ def vol24_artifacts(image_path,part_value):
     # working on dbspace files
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {dbspace_inode}'),stdout=subprocess.PIPE)
     dbspace_inode = search_value(output,'.push.db')
-    #show_data(image_path,part_value,dbspace_inode,'support_app_info')
+    show_data(image_path,part_value,dbspace_inode,'support_app_info')
 
     #working on browser history
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {data_inode}'),stdout=subprocess.PIPE)
@@ -273,7 +273,7 @@ def vol24_artifacts(image_path,part_value):
         output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {data_inode}'),stdout=subprocess.PIPE)
     
     data_inode = search_value(output,'.browser-provider-history.db')
-    #show_data(image_path,part_value,data_inode,'browser_history_info')
+    show_data(image_path,part_value,data_inode,'browser_history_info')
 
     #working on general usage owner data
     output = subprocess.run(shlex.split(f'sudo fls -o {part_value} {image_path} {home_inode}'),stdout=subprocess.PIPE)
@@ -321,6 +321,25 @@ def vol24_artifacts(image_path,part_value):
 
 
 if __name__ == "__main__":
+    print('''
+    
+
+
+                 ______     _______     __   _________   _______     ______
+               /       \   |	   \   |  | |   ___   | |   ____|   /  ____|
+              /   ___   \  |   __   \  |  | |  |   |__| |  |       /  /
+             /   /   \   \ |  |  \   \ |  | |  |______  |  |___   |  |
+             |   |___|   | |  |  |   | |  | |______   | |   ___|  |  |
+             |   |___|   | |  |__/   / |  |  __    |  | |  |      |  |
+             |   |   |   | |        /  |  | |  |___|  | |  |____   \  \____
+             |___|   |___| |_______/   |__| |_________| |_______|   \______|
+  
+  
+  
+  
+
+    
+    ''')
     image_path = "SamsungRefrigerator-002.img"
     
     print("Choose Mode of Operation")
